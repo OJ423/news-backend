@@ -5,6 +5,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
 const endpoints = require("../endpoints.json");
+const comments = require("../db/data/test-data/comments.js");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -151,6 +152,49 @@ describe("API Articles", () => {
       .expect(200)
       .then(({body}) => {
         expect(body.articles).toBeSortedBy("created_at", {descending: true})
+      })
+    })
+  })
+  describe("GET /api/articles/:article_id/comments", () => {
+    it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
+      return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({body}) => {
+        const firstComment = body.comments[0]
+        if(body.comments.length > 0) {
+          body.comments.map((comment) => {
+            expect(comment).toHaveProperty("comment_id")
+            expect(comment).toHaveProperty("votes")
+            expect(comment).toHaveProperty("created_at")
+            expect(comment).toHaveProperty("author")
+            expect(comment).toHaveProperty("body")
+            expect(comment).toHaveProperty("article_id")
+          })
+          expect(body.comments).toBeSortedBy("created_at", {descending: true})
+          expect(body.comments.length).toBe(11)
+          expect(firstComment.body).toBe("I hate streaming noses")
+          expect(firstComment.article_id).toBe(1)
+          expect(firstComment.author).toBe("icellusedkars")
+          expect(firstComment.votes).toBe(0)
+          expect(firstComment.created_at).toBe("2020-11-03T21:00:00.000Z")
+        }
+      })
+    })
+    it("400 returns invalid data message if the wrong data type is used", () => {
+      return request(app)
+      .get('/api/articles/one/comments')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid data type")
+      })
+    })
+    it("404 returns a 404 message if the article ID does not exist", () => {
+      return request(app)
+      .get('/api/articles/7892/comments')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("Article not found")
       })
     })
   })
