@@ -65,7 +65,7 @@ describe("API Topics", () => {
 });
 
 describe("API Articles", () => {
-  describe("200 GET /api/articles/:article_id", () => {
+  describe("GET /api/articles/:article_id", () => {
     it("200 Success - should return articles with the correct key value pairs", () => {
       return request(app)
         .get("/api/articles/1")
@@ -109,4 +109,40 @@ describe("API Articles", () => {
         })
     });
   });
+  describe("GET /api/articles", () => {
+    it("200 Success - should return articles with the correct keys and a sum of each articles comments", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          response.body.articles.forEach((story) => {
+            expect(story).toHaveProperty("author");
+            expect(story).toHaveProperty("title");
+            expect(story).toHaveProperty("article_id");
+            expect(story).toHaveProperty("topic");
+            expect(story).toHaveProperty("created_at");
+            expect(story).toHaveProperty("votes");
+            expect(story).toHaveProperty("article_img_url");
+            expect(story).toHaveProperty("comment_count");
+
+            expect(typeof story.author).toBe("string");
+            expect(typeof story.title).toBe("string");
+            expect(typeof story.article_id).toBe("number");
+            expect(typeof story.topic).toBe("string");
+            expect(typeof story.created_at).toBe("string");
+            expect(typeof story.votes).toBe("number");
+            expect(typeof story.article_img_url).toBe("string");
+            expect(typeof story.comment_count).toBe("number");
+          });
+        });
+    })
+    it('200 desc order - should return articles in desc order based on create_at date', () => {
+      return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles).toBeSortedBy("created_at", {descending: true})
+      })
+    })
+  })
 });
