@@ -167,12 +167,13 @@ describe("API Articles", () => {
   describe("GET /api/articles/:article_id/comments", () => {
     it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
       return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body }) => {
-          const firstComment = body.comments[0];
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const firstComment = body.comments[0];
+        expect(body.comments.length).toBe(11);
           if (body.comments.length > 0) {
-            body.comments.map((comment) => {
+            body.comments.forEach((comment) => {
               expect(comment).toHaveProperty("comment_id");
               expect(comment).toHaveProperty("votes");
               expect(comment).toHaveProperty("created_at");
@@ -183,7 +184,6 @@ describe("API Articles", () => {
             expect(body.comments).toBeSortedBy("created_at", {
               descending: true,
             });
-            expect(body.comments.length).toBe(11);
             expect(firstComment.body).toBe("I hate streaming noses");
             expect(firstComment.article_id).toBe(1);
             expect(firstComment.author).toBe("icellusedkars");
@@ -191,7 +191,10 @@ describe("API Articles", () => {
             expect(firstComment.created_at).toBe("2020-11-03T21:00:00.000Z");
           }
         });
-    });
+      });
+    it('404 for articles with no comments', () => {
+
+    })
     it("400 returns invalid data message if the wrong data type is used", () => {
       return request(app)
         .get("/api/articles/one/comments")
@@ -202,10 +205,10 @@ describe("API Articles", () => {
     });
     it("404 returns a 404 message if the article ID does not exist", () => {
       return request(app)
-        .get("/api/articles/7892/comments")
+        .get("/api/articles/4/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Article not found");
+          expect(body.msg).toBe("This article has no comments");
         });
     });
   });
