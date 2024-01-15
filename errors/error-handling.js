@@ -1,7 +1,5 @@
 exports.customErrors = (err, req, res, next) => {
-    if(err.msg === 'There are no topics in the database') {
-        return {msg: 'There are no topics in the database'}
-    }
+    if(err.msg) return {msg: err.msg}
     else {
         next(err)
     }

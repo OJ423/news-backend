@@ -4,9 +4,29 @@ const { db } = require("../db/connection");
 const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
+const endpoints = require("../endpoints.json")
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
+
+describe("API Endpoints", () => {
+  it('should response with an object', () => {
+    return request(app)
+    .get("/api")
+    .expect(200)
+    .then(({body}) => {
+      expect(typeof body).toBe('object')
+    })
+  })
+  it('should respond with an object that looks like the endpoints.json file', () => {
+    return request(app)
+    .get("/api")
+    .expect(200)
+    .then(({body}) => {
+      expect(body).toEqual(endpoints)
+    })
+  })
+})
 
 describe("API Topics", () => {
   describe("200 GET topics", () => {
