@@ -23,7 +23,7 @@ describe("API Endpoints", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toEqual(endpoints);
+        expect(body).toEqual({endpoints});
       });
   });
 });
@@ -71,6 +71,15 @@ describe("API Articles", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
+          expect(response.body.article[0].article_id).toBe(1)
+          expect(response.body.article[0].title).toBe("Living in the shadow of a great man")
+          expect(response.body.article[0].topic).toBe("mitch")
+          expect(response.body.article[0].author).toBe("butter_bridge")
+          expect(response.body.article[0].body).toBe("I find this existence challenging")
+          expect(response.body.article[0].created_at).toBe("2020-07-09T20:11:00.000Z")
+          expect(response.body.article[0].votes).toBe(100)
+          expect(response.body.article[0].article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+
           response.body.article.forEach((story) => {
             expect(story).toHaveProperty("article_id");
             expect(story).toHaveProperty("title");

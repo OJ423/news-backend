@@ -1,11 +1,10 @@
 const express = require("express")
 const {getApiEndpoints} = require("./controllers/api-endpoint.controllers.js")
 const {getAllTopics} = require("./controllers/topics.controllers.js")
-const {getArticleById, getAllArticles} = require("./controllers/articles.controller.js")
+const {getArticleById, getAllArticles} = require("./controllers/articles.controllers.js")
 const {applicationErrors, customErrors, psqlErrors} = require("./errors/error-handling")
 
 const app = express()
-app.use(express.json())
 
 // API Requests
 app.get('/api', getApiEndpoints)
