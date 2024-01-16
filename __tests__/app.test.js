@@ -345,3 +345,28 @@ describe("API Comments", () => {
     });
   });
 });
+
+describe("API Users", () => {
+  describe("200 GET /api/users", () => {
+    it("200 - should return all users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const users = body.users;
+          expect(users.length).toBe(4);
+          expect(users[0]).toEqual({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+          users.forEach((user) => {
+            expect(typeof user.username).toBe("string");
+            expect(typeof user.name).toBe("string");
+            expect(typeof user.avatar_url).toBe("string");
+          });
+        });
+    });
+  });
+});

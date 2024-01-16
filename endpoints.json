@@ -73,5 +73,18 @@
     "description": "Delete comment by comment_id.",
     "queries": [],
     "exampleResponse": {}
+  },
+  "GET /api/users": {
+    "description": "Retrieves all users from the database.",
+    "queries": [],
+    "exampleResponse": {
+      "article": [
+        {
+          "username": "MalcolmMethane",
+          "name": "Malcolm Murphy",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        }
+      ]
+    }
   }
 }
