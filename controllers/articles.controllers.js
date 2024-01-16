@@ -6,7 +6,7 @@ const {
   updateArticleById,
 } = require("../models/articles.models");
 
-const { checkArticleExists, checkUserExists, checkCommentBodyFormat } = require("../utils/db-checks");
+const { checkArticleExists, checkCommentBodyFormat, checkTopicsExists } = require("../utils/db-checks");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -20,8 +20,12 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles()
-    .then((articles) => {
+  const query = req.query
+  const checkTopics = checkTopicsExists(query.topic)
+  const selectArticles = selectAllArticles(query)
+  Promise.all([selectArticles, checkTopics])
+    .then((response) => {
+      const articles = response[0]
       res.status(200).send({ articles });
     })
     .catch((err) => {
