@@ -51,8 +51,19 @@ exports.addCommentToArticle = (articleId, body) => {
         VALUES ($1, $2, $3)
         RETURNING body, author AS username, article_id`, [body.body, body.username, articleId])
     .then(({rows}) => {
-      console.log(rows)
         return rows[0]
     })
+}
+
+exports.updateArticleById = (articleId, votes) => {
+  return db.query(`
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *`,[votes, articleId])
+  .then(({rows}) => {
+    if(rows.length === 0) return Promise.reject({status:404, msg: "Article does not exist"})
+    return rows[0]
+  })
 }
 
