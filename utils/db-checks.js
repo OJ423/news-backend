@@ -12,14 +12,27 @@ exports.checkArticleExists = (articleId) => {
 }
 
 exports.checkUserExists = (username) => {
+  return db.query(`
+    SELECT * FROM users
+    WHERE username = $1`, [username])
+  .then(({rows}) => {
+    if (rows.length === 0) {
+      return Promise.reject({status: 404, msg: `User does not exist`})
+    }
+  })
+}
+
+exports.checkTopicsExists = (topic) => {
+  if(topic !== undefined) {
     return db.query(`
-        SELECT * FROM users
-        WHERE username = $1`, [username])
+      SELECT * FROM topics
+      WHERE slug = $1`, [topic])
     .then(({rows}) => {
-        if (rows.length === 0) {
-            return Promise.reject({status: 404, msg: `User does not exist`})
-        }
+      if (rows.length === 0) {
+        return Promise.reject({status: 404, msg: `This topic does not exist`})
+      }
     })
+  }
 }
 
 exports.checkCommentBodyFormat = (body) => {

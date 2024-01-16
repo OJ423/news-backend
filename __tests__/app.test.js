@@ -138,6 +138,48 @@ describe("API Articles", () => {
         });
     });
   });
+  describe("GET /api/articles?:topic", () => {
+    it('200 should return articles filtered by topic', () => {
+      return request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      .then(({body}) => {
+        const articles = body.articles
+        const firstArticle = articles[0]
+        expect(articles.length).toBe(12)
+        expect(firstArticle.article_id).toBe(3)
+        expect(firstArticle.title).toBe("Eight pug gifs that remind me of mitch")
+        expect(firstArticle.topic).toBe("mitch")
+        expect(firstArticle.author).toBe("icellusedkars")
+        expect(firstArticle.votes).toBe(0)
+        expect(firstArticle.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+      })
+    })
+    it('404 when filtering for a topic that does not exist', () => {
+      return request(app)
+      .get('/api/articles?topic=perception')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("This topic does not exist")
+      })
+    })
+    it('200 responds with all articles when attempting to sort with an invalid query', () => {
+      return request(app)
+      .get('/api/articles?machines=mitch')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(13)
+      })
+    })
+    it('200 responds with empty array for topics with no articles', () => {
+      return request(app)
+      .get('/api/articles?topic=paper')
+      .expect(200)
+      .then(({body})=> {
+        expect(body.articles).toEqual([])
+      })
+    })
+  })
   describe("GET /api/articles/:article_id/comments", () => {
     it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
       return request(app)

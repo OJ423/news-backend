@@ -17,21 +17,26 @@ exports.selectArticleById = (articleId) => {
     });
 };
 
-exports.selectAllArticles = () => {
-  return db
-    .query(
-      `
+exports.selectAllArticles = (query) => {
+  let sqlQuery = `
     SELECT articles.article_id, articles.article_img_url, articles.author, articles.created_at, articles.title, articles.votes, articles.topic, COUNT(comments.article_id)::int AS comment_count
     FROM articles       
     LEFT JOIN comments 
     ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC
-`
-    )
-    .then((data) => {
-      return data.rows;
-    });
+    `
+  const topicKey = Object.keys(query) 
+  const validSort = ["topic"]
+  let queryValue = []
+  if(validSort.includes(topicKey[0])) {
+    sqlQuery += ` WHERE articles.topic = $1`
+    queryValue.push(query.topic)
+  }
+  sqlQuery += ` GROUP BY articles.article_id
+  ORDER BY articles.created_at DESC`
+  return db.query(sqlQuery, queryValue)
+  .then(({rows}) => {
+    return rows;
+  });
 };
 
 exports.selectCommentsByArticleId = (articleId) => {
