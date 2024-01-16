@@ -92,6 +92,22 @@ describe("API Articles", () => {
           expect(article.article_img_url.startsWith("http")).toBe(true);
         });
     });
+    it("200 Comment Count - should return an article with a count of all comments", () => {
+      return request(app)
+      .get('/api/articles/1')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.article.comment_count).toBe(11)
+      })
+    })
+    it("200 Zero Comment Count - should a 0 count for articles with no comments", () => {
+      return request(app)
+      .get('/api/articles/4')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.article.comment_count).toBe(0)
+      })
+    })
     it("400 invalid data - should return an error when the wrong data type is used", () => {
       return request(app)
         .get("/api/articles/one")
