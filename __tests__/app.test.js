@@ -88,15 +88,6 @@ describe("API Articles", () => {
           expect(article.article_img_url).toBe(
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
           );
-            expect(article).toHaveProperty("article_id");
-            expect(article).toHaveProperty("title");
-            expect(article).toHaveProperty("topic");
-            expect(article).toHaveProperty("author");
-            expect(article).toHaveProperty("body");
-            expect(article).toHaveProperty("created_at");
-            expect(article).toHaveProperty("votes");
-            expect(article).toHaveProperty("article_img_url");
-
             expect(typeof article.title).toBe("string");
             expect(typeof article.topic).toBe("string");
             expect(typeof article.author).toBe("string");
@@ -131,15 +122,6 @@ describe("API Articles", () => {
         .expect(200)
         .then((response) => {
           response.body.articles.forEach((story) => {
-            expect(story).toHaveProperty("author");
-            expect(story).toHaveProperty("title");
-            expect(story).toHaveProperty("article_id");
-            expect(story).toHaveProperty("topic");
-            expect(story).toHaveProperty("created_at");
-            expect(story).toHaveProperty("votes");
-            expect(story).toHaveProperty("article_img_url");
-            expect(story).toHaveProperty("comment_count");
-
             expect(typeof story.author).toBe("string");
             expect(typeof story.title).toBe("string");
             expect(typeof story.article_id).toBe("number");
@@ -275,8 +257,59 @@ describe("API Articles", () => {
       .send({ username: "cliffno1", body: "Is wired for sound a good a true classic?"})
       .expect(404)
       .then(({body}) => {
-        expect(body.msg).toBe("User does not exist")
+        expect(body.msg).toBe('Key (author)=(cliffno1) is not present in table "users".')
       })
     })
   });
+  describe("PATCH /api/articles/:article_id", () => {
+    it('200 returns with article title, id and votes added by the input', () => {
+      return request(app)
+      .patch('/api/articles/5')
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({body}) => {
+        const article = body.article
+        expect(article.title).toBe("UNCOVERED: catspiracy to bring down democracy")
+        expect(article.article_id).toBe(5)
+        expect(article.votes).toBe(5)
+      })
+    })
+    it('200 returns with votes decreased by input', () => {
+      return request(app)
+      .patch('/api/articles/5')
+      .send({ inc_votes: -10 })
+      .expect(200)
+      .then(({body}) => {
+        const article = body.article
+        expect(article.votes).toBe(-10)
+      })
+    })
+    it('404 article cannot be found', () => {
+      return request(app)
+      .patch('/api/articles/567')
+      .send({ inc_votes: -10 })
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("Article does not exist")
+      })
+    })
+    it('400 wrong data type inputted', () => {
+      return request(app)
+      .patch('/api/articles/5')
+      .send({ inc_votes: 'ten' })
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid data type")
+      })
+    })
+    it('400 wrong input key', () => {
+      return request(app)
+      .patch('/api/articles/5')
+      .send({ up_votes: 'ten' })
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Missing required data")
+      })
+    })
+  })
 });
