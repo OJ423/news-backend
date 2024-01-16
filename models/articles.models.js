@@ -13,7 +13,7 @@ exports.selectArticleById = (articleId) => {
       if (article.length === 0) {
         return Promise.reject({ msg: "Article not found", status: 404 });
       }
-      return article;
+      return article[0];
     });
 };
 
@@ -30,9 +30,6 @@ exports.selectAllArticles = () => {
 `
     )
     .then((data) => {
-        if(data.rows.length === 0) {
-        Promise.reject({msg: "There are no articles in the database"})
-      }
       return data.rows;
     });
 };
@@ -43,9 +40,6 @@ exports.selectCommentsByArticleId = (articleId) => {
         WHERE article_id = $1
         ORDER BY created_at DESC`, [articleId])
     .then(({rows}) => {
-        if (rows.length === 0) {
-            return Promise.reject({ msg: "This article has no comments", status: 404 });
-          }
         return rows
     })
 }
@@ -55,8 +49,9 @@ exports.addCommentToArticle = (articleId, body) => {
         INSERT INTO comments
         (body, author, article_id)
         VALUES ($1, $2, $3)
-        RETURNING body`, [body.body, body.username, articleId])
+        RETURNING body, author AS username, article_id`, [body.body, body.username, articleId])
     .then(({rows}) => {
+      console.log(rows)
         return rows[0]
     })
 }

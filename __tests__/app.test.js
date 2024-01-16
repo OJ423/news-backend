@@ -71,42 +71,40 @@ describe("API Articles", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
-          expect(response.body.article[0].article_id).toBe(1);
-          expect(response.body.article[0].title).toBe(
+          const article = response.body.article
+          expect(article.article_id).toBe(1);
+          expect(article.title).toBe(
             "Living in the shadow of a great man"
           );
-          expect(response.body.article[0].topic).toBe("mitch");
-          expect(response.body.article[0].author).toBe("butter_bridge");
-          expect(response.body.article[0].body).toBe(
+          expect(article.topic).toBe("mitch");
+          expect(article.author).toBe("butter_bridge");
+          expect(article.body).toBe(
             "I find this existence challenging"
           );
-          expect(response.body.article[0].created_at).toBe(
+          expect(article.created_at).toBe(
             "2020-07-09T20:11:00.000Z"
           );
-          expect(response.body.article[0].votes).toBe(100);
-          expect(response.body.article[0].article_img_url).toBe(
+          expect(article.votes).toBe(100);
+          expect(article.article_img_url).toBe(
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
           );
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("body");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
 
-          response.body.article.forEach((story) => {
-            expect(story).toHaveProperty("article_id");
-            expect(story).toHaveProperty("title");
-            expect(story).toHaveProperty("topic");
-            expect(story).toHaveProperty("author");
-            expect(story).toHaveProperty("body");
-            expect(story).toHaveProperty("created_at");
-            expect(story).toHaveProperty("votes");
-            expect(story).toHaveProperty("article_img_url");
-
-            expect(typeof story.title).toBe("string");
-            expect(typeof story.topic).toBe("string");
-            expect(typeof story.author).toBe("string");
-            expect(typeof story.body).toBe("string");
-            expect(typeof story.created_at).toBe("string");
-            expect(typeof story.votes).toBe("number");
-            expect(typeof story.article_img_url).toBe("string");
-            expect(story.article_img_url.startsWith("http")).toBe(true);
-          });
+            expect(typeof article.title).toBe("string");
+            expect(typeof article.topic).toBe("string");
+            expect(typeof article.author).toBe("string");
+            expect(typeof article.body).toBe("string");
+            expect(typeof article.created_at).toBe("string");
+            expect(typeof article.votes).toBe("number");
+            expect(typeof article.article_img_url).toBe("string");
+            expect(article.article_img_url.startsWith("http")).toBe(true);
         });
     });
     it("400 invalid data - should return an error when the wrong data type is used", () => {
@@ -192,8 +190,13 @@ describe("API Articles", () => {
           }
         });
       });
-    it('404 for articles with no comments', () => {
-
+    it('200 and empty array for articles with no comments', () => {
+      return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments).toEqual([])
+      })
     })
     it("400 returns invalid data message if the wrong data type is used", () => {
       return request(app)
@@ -205,10 +208,10 @@ describe("API Articles", () => {
     });
     it("404 returns a 404 message if the article ID does not exist", () => {
       return request(app)
-        .get("/api/articles/4/comments")
+        .get("/api/articles/400/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("This article has no comments");
+          expect(body.msg).toBe("Article does not exist");
         });
     });
   });
@@ -219,7 +222,9 @@ describe("API Articles", () => {
         .send({ username: "butter_bridge", body: "I saw this on Facebook" })
         .expect(201)
         .then(({ body }) => {
-          expect(body.comment.body).toBe("I saw this on Facebook");
+          expect(body.comment.body).toBe("I saw this on Facebook")
+          expect(body.comment.article_id).toBe(2);
+          expect(body.comment.username).toBe("butter_bridge")
         })
         .then(() => {
           return db.query(`SELECT * FROM comments`).then((totalComments) => {
@@ -243,7 +248,7 @@ describe("API Articles", () => {
       .send({ username: "butter_bridge", body: "I saw this on Facebook" })
       .expect(404)
       .then(({body}) => {
-        expect(body.msg).toBe(`Key (article_id)=(999) is not present in table \"articles\".`)
+        expect(body.msg).toBe(`Article does not exist`)
       })
     })
     it("400 returns error when incomplete data is submitted", () => {
@@ -255,13 +260,22 @@ describe("API Articles", () => {
         expect(body.msg).toBe(`Missing required data`)
       })
     })
+    it("400 returns error when the wrong format of data is used with the correct columns", () => {
+      return request(app)
+      .post("/api/articles/6/comments")
+      .send({ username: "butter_bridge", body: {number:34758} })
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe(`Wrong data type in body`)
+      })
+    })
     it("400 returns error when unregistered user submits comment", () => {
       return request(app)
       .post("/api/articles/6/comments")
       .send({ username: "cliffno1", body: "Is wired for sound a good a true classic?"})
       .expect(404)
       .then(({body}) => {
-        expect(body.msg).toBe("Key (author)=(cliffno1) is not present in table \"users\".")
+        expect(body.msg).toBe("User does not exist")
       })
     })
   });
