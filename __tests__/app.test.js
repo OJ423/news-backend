@@ -71,31 +71,25 @@ describe("API Articles", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
-          const article = response.body.article
+          const article = response.body.article;
           expect(article.article_id).toBe(1);
-          expect(article.title).toBe(
-            "Living in the shadow of a great man"
-          );
+          expect(article.title).toBe("Living in the shadow of a great man");
           expect(article.topic).toBe("mitch");
           expect(article.author).toBe("butter_bridge");
-          expect(article.body).toBe(
-            "I find this existence challenging"
-          );
-          expect(article.created_at).toBe(
-            "2020-07-09T20:11:00.000Z"
-          );
+          expect(article.body).toBe("I find this existence challenging");
+          expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
           expect(article.votes).toBe(100);
           expect(article.article_img_url).toBe(
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
           );
-            expect(typeof article.title).toBe("string");
-            expect(typeof article.topic).toBe("string");
-            expect(typeof article.author).toBe("string");
-            expect(typeof article.body).toBe("string");
-            expect(typeof article.created_at).toBe("string");
-            expect(typeof article.votes).toBe("number");
-            expect(typeof article.article_img_url).toBe("string");
-            expect(article.article_img_url.startsWith("http")).toBe(true);
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.body).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.article_img_url.startsWith("http")).toBe(true);
         });
     });
     it("400 invalid data - should return an error when the wrong data type is used", () => {
@@ -147,11 +141,11 @@ describe("API Articles", () => {
   describe("GET /api/articles/:article_id/comments", () => {
     it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
       return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then(({ body }) => {
-        const firstComment = body.comments[0];
-        expect(body.comments.length).toBe(11);
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const firstComment = body.comments[0];
+          expect(body.comments.length).toBe(11);
           if (body.comments.length > 0) {
             body.comments.forEach((comment) => {
               expect(comment).toHaveProperty("comment_id");
@@ -171,15 +165,15 @@ describe("API Articles", () => {
             expect(firstComment.created_at).toBe("2020-11-03T21:00:00.000Z");
           }
         });
-      });
-    it('200 and empty array for articles with no comments', () => {
+    });
+    it("200 and empty array for articles with no comments", () => {
       return request(app)
-      .get("/api/articles/4/comments")
-      .expect(200)
-      .then(({body}) => {
-        expect(body.comments).toEqual([])
-      })
-    })
+        .get("/api/articles/4/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toEqual([]);
+        });
+    });
     it("400 returns invalid data message if the wrong data type is used", () => {
       return request(app)
         .get("/api/articles/one/comments")
@@ -204,9 +198,9 @@ describe("API Articles", () => {
         .send({ username: "butter_bridge", body: "I saw this on Facebook" })
         .expect(201)
         .then(({ body }) => {
-          expect(body.comment.body).toBe("I saw this on Facebook")
+          expect(body.comment.body).toBe("I saw this on Facebook");
           expect(body.comment.article_id).toBe(2);
-          expect(body.comment.username).toBe("butter_bridge")
+          expect(body.comment.username).toBe("butter_bridge");
         })
         .then(() => {
           return db.query(`SELECT * FROM comments`).then((totalComments) => {
@@ -220,96 +214,134 @@ describe("API Articles", () => {
         .post("/api/articles/four/comments")
         .send({ username: "butter_bridge", body: "I saw this on Facebook" })
         .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe("Invalid data type")
-      })
-    })
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
     it("404 returns a 404 message if the article ID does not exist", () => {
       return request(app)
-      .post("/api/articles/999/comments")
-      .send({ username: "butter_bridge", body: "I saw this on Facebook" })
-      .expect(404)
-      .then(({body}) => {
-        expect(body.msg).toBe(`Article does not exist`)
-      })
-    })
+        .post("/api/articles/999/comments")
+        .send({ username: "butter_bridge", body: "I saw this on Facebook" })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe(`Article does not exist`);
+        });
+    });
     it("400 returns error when incomplete data is submitted", () => {
       return request(app)
-      .post("/api/articles/6/comments")
-      .send({ username: "butter_bridge", })
-      .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe(`Missing required data`)
-      })
-    })
+        .post("/api/articles/6/comments")
+        .send({ username: "butter_bridge" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(`Missing required data`);
+        });
+    });
     it("400 returns error when the wrong format of data is used with the correct columns", () => {
       return request(app)
-      .post("/api/articles/6/comments")
-      .send({ username: "butter_bridge", body: {number:34758} })
-      .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe(`Wrong data type in body`)
-      })
-    })
+        .post("/api/articles/6/comments")
+        .send({ username: "butter_bridge", body: { number: 34758 } })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(`Wrong data type in body`);
+        });
+    });
     it("400 returns error when unregistered user submits comment", () => {
       return request(app)
-      .post("/api/articles/6/comments")
-      .send({ username: "cliffno1", body: "Is wired for sound a good a true classic?"})
-      .expect(404)
-      .then(({body}) => {
-        expect(body.msg).toBe('Key (author)=(cliffno1) is not present in table "users".')
-      })
-    })
+        .post("/api/articles/6/comments")
+        .send({
+          username: "cliffno1",
+          body: "Is wired for sound a good a true classic?",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            'Key (author)=(cliffno1) is not present in table "users".'
+          );
+        });
+    });
   });
   describe("PATCH /api/articles/:article_id", () => {
-    it('200 returns with article title, id and votes added by the input', () => {
+    it("200 returns with article title, id and votes added by the input", () => {
       return request(app)
-      .patch('/api/articles/5')
-      .send({ inc_votes: 5 })
-      .expect(200)
-      .then(({body}) => {
-        const article = body.article
-        expect(article.title).toBe("UNCOVERED: catspiracy to bring down democracy")
-        expect(article.article_id).toBe(5)
-        expect(article.votes).toBe(5)
-      })
-    })
-    it('200 returns with votes decreased by input', () => {
+        .patch("/api/articles/5")
+        .send({ inc_votes: 5 })
+        .expect(200)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article.title).toBe(
+            "UNCOVERED: catspiracy to bring down democracy"
+          );
+          expect(article.article_id).toBe(5);
+          expect(article.votes).toBe(5);
+        });
+    });
+    it("200 returns with votes decreased by input", () => {
       return request(app)
-      .patch('/api/articles/5')
-      .send({ inc_votes: -10 })
-      .expect(200)
-      .then(({body}) => {
-        const article = body.article
-        expect(article.votes).toBe(-10)
-      })
-    })
-    it('404 article cannot be found', () => {
+        .patch("/api/articles/5")
+        .send({ inc_votes: -10 })
+        .expect(200)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article.votes).toBe(-10);
+        });
+    });
+    it("404 article cannot be found", () => {
       return request(app)
-      .patch('/api/articles/567')
-      .send({ inc_votes: -10 })
-      .expect(404)
-      .then(({body}) => {
-        expect(body.msg).toBe("Article does not exist")
-      })
-    })
-    it('400 wrong data type inputted', () => {
+        .patch("/api/articles/567")
+        .send({ inc_votes: -10 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Article does not exist");
+        });
+    });
+    it("400 wrong data type inputted", () => {
       return request(app)
-      .patch('/api/articles/5')
-      .send({ inc_votes: 'ten' })
-      .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe("Invalid data type")
-      })
-    })
-    it('400 wrong input key', () => {
+        .patch("/api/articles/5")
+        .send({ inc_votes: "ten" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
+    it("400 wrong input key", () => {
       return request(app)
-      .patch('/api/articles/5')
-      .send({ up_votes: 'ten' })
-      .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe("Missing required data")
-      })
-    })
-  })
+        .patch("/api/articles/5")
+        .send({ up_votes: "ten" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing required data");
+        });
+    });
+  });
+});
+
+describe("API Comments", () => {
+  describe("DELETE 204 - /api/comments/comment_id", () => {
+    it("204 return with no content - table should have one less comment", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(() => {
+          return db.query(`SELECT * FROM comments`).then(({ rows }) => {
+            expect(rows.length).toBe(17);
+          });
+        });
+    });
+    it("400 bad request when using wrong data type as a param", () => {
+      return request(app)
+        .delete("/api/comments/one")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
+    it("404 comment doesn't exist", () => {
+      return request(app)
+        .delete("/api/comments/313")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Comment does not exist");
+        });
+    });
+  });
 });
