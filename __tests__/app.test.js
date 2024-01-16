@@ -169,6 +169,9 @@ describe("API Articles", () => {
         expect(firstArticle.author).toBe("icellusedkars")
         expect(firstArticle.votes).toBe(0)
         expect(firstArticle.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+        })
       })
     })
     it('404 when filtering for a topic that does not exist', () => {
