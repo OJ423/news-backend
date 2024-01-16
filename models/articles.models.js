@@ -20,22 +20,28 @@ exports.selectArticleById = (articleId) => {
     });
 };
 
-exports.selectAllArticles = (query) => {
+exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC") => {
   let sqlQuery = `
     SELECT articles.article_id, articles.article_img_url, articles.author, articles.created_at, articles.title, articles.votes, articles.topic, COUNT(comments.article_id)::int AS comment_count
     FROM articles       
     LEFT JOIN comments 
     ON comments.article_id = articles.article_id
     `
-  const topicKey = Object.keys(query) 
-  const validSort = ["topic"]
+  const sortValidator = ["title", "author", "topic", "created_at", "votes"]
+  const orderUpper = order.toUpperCase()
   let queryValue = []
-  if(validSort.includes(topicKey[0])) {
+  if(topic !== undefined) {
     sqlQuery += ` WHERE articles.topic = $1`
-    queryValue.push(query.topic)
+    queryValue.push(topic)
   }
-  sqlQuery += ` GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC`
+  sqlQuery += ` GROUP BY articles.article_id`
+
+  if(sortValidator.includes(sortBy)) {
+    sqlQuery += ` ORDER BY articles.${sortBy} ${orderUpper}`
+  }
+  else if (!sortValidator.includes(sortBy)) {
+    return Promise.reject({status: 400, msg: "Please use another sort_by type."})
+  }
   return db.query(sqlQuery, queryValue)
   .then(({rows}) => {
     return rows;

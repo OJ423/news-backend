@@ -199,6 +199,80 @@ describe("API Articles", () => {
       })
     })
   })
+  describe("GET /api/articles?sort_by=:column", () => {
+    it('200 - sorts decending order on title', () => {
+      return request(app)
+      .get('/api/articles?sort_by=title')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles).toBeSortedBy('title', {descending: true})
+        expect(body.articles.length).toBe(13)
+      })
+    })
+    it('200 - sorts decending order on author', () => {
+      return request(app)
+      .get('/api/articles?sort_by=author')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles).toBeSortedBy('author', {descending: true})
+        expect(body.articles.length).toBe(13)
+      })
+    })
+    it('200 - sorts decending order on topic', () => {
+      return request(app)
+      .get('/api/articles?sort_by=topic')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles).toBeSortedBy('topic', {descending: true})
+        expect(body.articles.length).toBe(13)
+      })
+    })
+    it('200 - sorts decending order on votes', () => {
+      return request(app)
+      .get('/api/articles?sort_by=votes')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles).toBeSortedBy('votes', {descending: true})
+        expect(body.articles.length).toBe(13)
+      })
+    })
+    it('400 - bad request for invalid sort', () => {
+      return request(app)
+      .get('/api/articles?sort_by=jabber')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Please use another sort_by type.")
+      })
+    })
+  })
+  describe("GET /api/articles?order=:ASC/DESC", () => {
+    it('200 ascending order on create_at', () => {
+      return request(app)
+      .get('/api/articles?order=asc')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles).toBeSortedBy('created_at', {ascending: true})
+        expect(body.articles.length).toBe(13)
+      })
+    })
+    it('200 combine sort_by with order - ascending', () => {
+      return request(app)
+      .get('/api/articles?sort_by=title&order=asc')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles).toBeSortedBy('title', {ascending: true})
+        expect(body.articles.length).toBe(13)
+      })
+    })
+    it('400 bad request error with combined sort_by and order', () => {
+      return request(app)
+      .get('/api/articles?sort_by=money&order=asc')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Please use another sort_by type.")
+      })
+    })
+  })
   describe("GET /api/articles/:article_id/comments", () => {
     it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
       return request(app)
