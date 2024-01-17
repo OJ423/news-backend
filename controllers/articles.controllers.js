@@ -4,9 +4,10 @@ const {
   selectCommentsByArticleId,
   addCommentToArticle,
   updateArticleById,
+  addNewArticle,
 } = require("../models/articles.models");
 
-const { checkArticleExists, checkCommentBodyFormat, checkTopicsExists } = require("../utils/db-checks");
+const { checkArticleExists, checkCommentBodyFormat, checkTopicsExists, checkUserExists } = require("../utils/db-checks");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -74,3 +75,18 @@ exports.patchArticleById = (req, res, next) => {
     next(err)
   })
 }
+
+exports.postArticle = (req, res, next) => {
+  const { author, title, body, topic, article_img_url } = req.body;
+  const checkUser = checkUserExists(author)
+  const checkTopic = checkTopicsExists(topic)
+  const addArticle = addNewArticle(author, title, body, topic, article_img_url)
+  Promise.all([addArticle, checkUser, checkTopic])
+    .then((response) => {
+      const article = response[0]
+      res.status(201).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

@@ -81,3 +81,30 @@ exports.updateArticleById = (articleId, votes) => {
   })
 }
 
+exports.addNewArticle = (author, title, body, topic, article_img_url = "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700") => {
+  return db.query(`
+    INSERT INTO articles
+    (author, title, body, topic, article_img_url)
+    VALUES
+    ($1, $2, $3, $4, $5)
+    RETURNING *`,
+    [author,title, body, topic, article_img_url])
+  .then(({rows}) => {
+    const articleId = rows[0].article_id;
+    return db
+    .query(
+      `
+   SELECT articles.article_id, articles.title, articles.body, articles.author, articles.created_at, articles.votes, articles.topic, articles.article_img_url, COUNT(comments.article_id)::INT AS comment_count FROM articles
+   LEFT JOIN comments
+   ON comments.article_id = articles.article_id
+   WHERE articles.article_id = $1
+   GROUP BY articles.article_id
+   `,
+      [articleId])
+  })
+  .then(({rows}) => {
+    return rows[0]
+  })
+
+}
+
