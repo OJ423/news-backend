@@ -94,20 +94,20 @@ describe("API Articles", () => {
     });
     it("200 Comment Count - should return an article with a count of all comments", () => {
       return request(app)
-      .get('/api/articles/1')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.article.comment_count).toBe(11)
-      })
-    })
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article.comment_count).toBe(11);
+        });
+    });
     it("200 Zero Comment Count - should a 0 count for articles with no comments", () => {
       return request(app)
-      .get('/api/articles/4')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.article.comment_count).toBe(0)
-      })
-    })
+        .get("/api/articles/4")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article.comment_count).toBe(0);
+        });
+    });
     it("400 invalid data - should return an error when the wrong data type is used", () => {
       return request(app)
         .get("/api/articles/one")
@@ -155,124 +155,128 @@ describe("API Articles", () => {
     });
   });
   describe("GET /api/articles?:topic", () => {
-    it('200 should return articles filtered by topic', () => {
+    it("200 should return articles filtered by topic", () => {
       return request(app)
-      .get('/api/articles?topic=mitch')
-      .expect(200)
-      .then(({body}) => {
-        const articles = body.articles
-        const firstArticle = articles[0]
-        expect(articles.length).toBe(12)
-        expect(firstArticle.article_id).toBe(3)
-        expect(firstArticle.title).toBe("Eight pug gifs that remind me of mitch")
-        expect(firstArticle.topic).toBe("mitch")
-        expect(firstArticle.author).toBe("icellusedkars")
-        expect(firstArticle.votes).toBe(0)
-        expect(firstArticle.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
-        articles.forEach((article) => {
-          expect(article.topic).toBe("mitch")
-        })
-      })
-    })
-    it('404 when filtering for a topic that does not exist', () => {
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          const firstArticle = articles[0];
+          expect(articles.length).toBe(12);
+          expect(firstArticle.article_id).toBe(3);
+          expect(firstArticle.title).toBe(
+            "Eight pug gifs that remind me of mitch"
+          );
+          expect(firstArticle.topic).toBe("mitch");
+          expect(firstArticle.author).toBe("icellusedkars");
+          expect(firstArticle.votes).toBe(0);
+          expect(firstArticle.article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    it("404 when filtering for a topic that does not exist", () => {
       return request(app)
-      .get('/api/articles?topic=perception')
-      .expect(404)
-      .then(({body}) => {
-        expect(body.msg).toBe("This topic does not exist")
-      })
-    })
-    it('200 responds with all articles when attempting to sort with an invalid query', () => {
+        .get("/api/articles?topic=perception")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("This topic does not exist");
+        });
+    });
+    it("200 responds with all articles when attempting to sort with an invalid query", () => {
       return request(app)
-      .get('/api/articles?machines=mitch')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.articles.length).toBe(13)
-      })
-    })
-    it('200 responds with empty array for topics with no articles', () => {
+        .get("/api/articles?machines=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(13);
+        });
+    });
+    it("200 responds with empty array for topics with no articles", () => {
       return request(app)
-      .get('/api/articles?topic=paper')
-      .expect(200)
-      .then(({body})=> {
-        expect(body.articles).toEqual([])
-      })
-    })
-  })
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual([]);
+        });
+    });
+  });
   describe("GET /api/articles?sort_by=:column", () => {
-    it('200 - sorts decending order on title', () => {
+    it("200 - sorts decending order on title", () => {
       return request(app)
-      .get('/api/articles?sort_by=title')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.articles).toBeSortedBy('title', {descending: true})
-        expect(body.articles.length).toBe(13)
-      })
-    })
-    it('200 - sorts decending order on author', () => {
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("title", { descending: true });
+          expect(body.articles.length).toBe(13);
+        });
+    });
+    it("200 - sorts decending order on author", () => {
       return request(app)
-      .get('/api/articles?sort_by=author')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.articles).toBeSortedBy('author', {descending: true})
-        expect(body.articles.length).toBe(13)
-      })
-    })
-    it('200 - sorts decending order on topic', () => {
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("author", { descending: true });
+          expect(body.articles.length).toBe(13);
+        });
+    });
+    it("200 - sorts decending order on topic", () => {
       return request(app)
-      .get('/api/articles?sort_by=topic')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.articles).toBeSortedBy('topic', {descending: true})
-        expect(body.articles.length).toBe(13)
-      })
-    })
-    it('200 - sorts decending order on votes', () => {
+        .get("/api/articles?sort_by=topic")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("topic", { descending: true });
+          expect(body.articles.length).toBe(13);
+        });
+    });
+    it("200 - sorts decending order on votes", () => {
       return request(app)
-      .get('/api/articles?sort_by=votes')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.articles).toBeSortedBy('votes', {descending: true})
-        expect(body.articles.length).toBe(13)
-      })
-    })
-    it('400 - bad request for invalid sort', () => {
+        .get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("votes", { descending: true });
+          expect(body.articles.length).toBe(13);
+        });
+    });
+    it("400 - bad request for invalid sort", () => {
       return request(app)
-      .get('/api/articles?sort_by=jabber')
-      .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe("Please use another sort_by type.")
-      })
-    })
-  })
+        .get("/api/articles?sort_by=jabber")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Please use another sort_by type.");
+        });
+    });
+  });
   describe("GET /api/articles?order=:ASC/DESC", () => {
-    it('200 ascending order on create_at', () => {
+    it("200 ascending order on create_at", () => {
       return request(app)
-      .get('/api/articles?order=asc')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.articles).toBeSortedBy('created_at', {ascending: true})
-        expect(body.articles.length).toBe(13)
-      })
-    })
-    it('200 combine sort_by with order - ascending', () => {
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("created_at", { ascending: true });
+          expect(body.articles.length).toBe(13);
+        });
+    });
+    it("200 combine sort_by with order - ascending", () => {
       return request(app)
-      .get('/api/articles?sort_by=title&order=asc')
-      .expect(200)
-      .then(({body}) => {
-        expect(body.articles).toBeSortedBy('title', {ascending: true})
-        expect(body.articles.length).toBe(13)
-      })
-    })
-    it('400 bad request error with combined sort_by and order', () => {
+        .get("/api/articles?sort_by=title&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("title", { ascending: true });
+          expect(body.articles.length).toBe(13);
+        });
+    });
+    it("400 bad request error with combined sort_by and order", () => {
       return request(app)
-      .get('/api/articles?sort_by=money&order=asc')
-      .expect(400)
-      .then(({body}) => {
-        expect(body.msg).toBe("Please use another sort_by type.")
-      })
-    })
-  })
+        .get("/api/articles?sort_by=money&order=asc")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Please use another sort_by type.");
+        });
+    });
+  });
   describe("GET /api/articles/:article_id/comments", () => {
     it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
       return request(app)
@@ -448,6 +452,75 @@ describe("API Articles", () => {
         });
     });
   });
+  describe("POST /api/articles", () => {
+    it("adds a new article and returns it", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          title: "Being strong",
+          body: "Turns out all I needed was money",
+          topic: "mitch",
+          article_img_url:
+            "https://ylhsthewrangler.com/wp-content/uploads/2016/09/weight-lifting-brain-893x900.jpg",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const article = body.article;
+          expect(article.article_id).toBe(14);
+          expect(article.title).toBe("Being strong");
+          expect(article.body).toBe("Turns out all I needed was money");
+          expect(typeof article.created_at).toBe("string");
+          expect(article.votes).toBe(0);
+          expect(article.topic).toBe("mitch");
+          expect(article.article_img_url).toBe(
+            "https://ylhsthewrangler.com/wp-content/uploads/2016/09/weight-lifting-brain-893x900.jpg"
+          );
+          expect(article.comment_count).toBe(0);
+        })
+    });
+    it("400 returns missing data message for incomplete post request", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({ author: "butter_bridge", body: "I saw this on Facebook" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing required data");
+        });
+    });
+    it("404 returns a 404 message if the user does not exist", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "mike",
+          title: "Being strong",
+          body: "Turns out all I needed was money",
+          topic: "mitch",
+          article_img_url:
+            "https://ylhsthewrangler.com/wp-content/uploads/2016/09/weight-lifting-brain-893x900.jpg",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe(`User not registered`);
+        });
+    });
+    it("404 returns a 404 message if the topic does not exist", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "butter_bridge",
+          title: "Being strong",
+          body: "Turns out all I needed was money",
+          topic: "warts",
+          article_img_url:
+            "https://ylhsthewrangler.com/wp-content/uploads/2016/09/weight-lifting-brain-893x900.jpg",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe(`This topic does not exist`);
+        });
+    });
+  });
 });
 
 describe("API Comments", () => {
@@ -479,6 +552,57 @@ describe("API Comments", () => {
         });
     });
   });
+  describe("PATCH /api/comments/:comment_id", () => {
+    it("200 returns with the comment and votes added by the input", () => {
+      return request(app)
+        .patch("/api/comments/5")
+        .send({ inc_votes: 5 })
+        .expect(200)
+        .then(({ body }) => {
+          const comment = body.comment;
+          expect(comment.body).toBe("I hate streaming noses");
+          expect(comment.comment_id).toBe(5);
+          expect(comment.votes).toBe(5);
+        });
+    });
+    it("200 returns with votes decreased by input", () => {
+      return request(app)
+        .patch("/api/comments/5")
+        .send({ inc_votes: -10 })
+        .expect(200)
+        .then(({ body }) => {
+          const comment = body.comment;
+          expect(comment.votes).toBe(-10);
+        });
+    });
+    it("404 comment cannot be found", () => {
+      return request(app)
+        .patch("/api/comments/567")
+        .send({ inc_votes: -10 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Comment does not exist");
+        });
+    });
+    it("400 wrong data type inputted", () => {
+      return request(app)
+        .patch("/api/comments/5")
+        .send({ inc_votes: "ten" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
+    it("400 wrong input key", () => {
+      return request(app)
+        .patch("/api/comments/5")
+        .send({ up_votes: "ten" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing required data");
+        });
+    });
+  });
 });
 
 describe("API Users", () => {
@@ -501,6 +625,29 @@ describe("API Users", () => {
             expect(typeof user.name).toBe("string");
             expect(typeof user.avatar_url).toBe("string");
           });
+        });
+    });
+  });
+  describe("GET /api/users/:username", () => {
+    it("200 returns a user by their user name", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          const user = body.user;
+          expect(user.username).toBe("butter_bridge");
+          expect(user.name).toBe("jonny");
+          expect(user.avatar_url).toBe(
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          );
+        });
+    });
+    it("404 not found - should return a 404 not found error", () => {
+      return request(app)
+        .get("/api/users/7843")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("User not found");
         });
     });
   });

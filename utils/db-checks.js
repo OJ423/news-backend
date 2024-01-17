@@ -35,6 +35,17 @@ exports.checkTopicsExists = (topic) => {
   }
 }
 
+exports.checkUserExists = (user) => {
+    return db.query(`
+      SELECT * FROM users
+      WHERE username = $1`, [user])
+    .then(({rows}) => {
+      if (rows.length === 0) {
+        return Promise.reject({status: 404, msg: `User not registered`})
+      }
+    })
+}
+
 exports.checkCommentBodyFormat = (body) => {
     if(typeof body.body === 'object') {
         return Promise.reject({status:400, msg: "Wrong data type in body"})
