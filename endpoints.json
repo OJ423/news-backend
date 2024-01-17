@@ -10,8 +10,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles. Default ordering desc on created_at column. Includes a comment count.",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all articles. Default ordering desc on created_at column. Includes a comment count. Use sort_by and order queries",
+    "queries": ["author", "topic", "sort_by", ["title", "author", "topic", "created_at"], "order", ["ASC", "DESC"]],
     "exampleResponse": {
       "articles": [
         {
