@@ -71,14 +71,35 @@ exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit
     return rows;
   });
 };
-exports.selectCommentsByArticleId = (articleId) => {
-    return db.query(`
-        SELECT * FROM comments
-        WHERE article_id = $1
-        ORDER BY created_at DESC`, [articleId])
-    .then(({rows}) => {
-        return rows
-    })
+exports.selectCommentsByArticleId = (articleId, limit = 10, p) => {
+  let sqlQuery = `
+    SELECT * FROM comments
+    WHERE article_id = $1
+    ORDER BY created_at DESC`
+  const queryValue = [articleId]
+
+  if(limit < 1 || /^\D/g.test(limit)) limit = 10
+  sqlQuery += ` LIMIT ${limit}`
+
+  const pNum = +p
+  if (/^\D/g.test(p) && p !== undefined) {
+    return Promise.reject({status:400, msg: "Invalid page number"})
+  }
+  if (p !== undefined && pNum === 1) {
+    sqlQuery += ` OFFSET 0`
+  }
+  else if (p !== undefined && pNum > 1) {
+    const offsetValue = (p-1) * limit
+      sqlQuery += ` OFFSET ${offsetValue}`
+  }
+
+  return db.query(sqlQuery, queryValue)
+  .then(({rows}) => {
+    if(p !== undefined && rows.length === 0) {
+      return Promise.reject({status:404, msg:"No records, exceeded the max page"})
+    }
+      return rows
+  })
 }
 
 exports.addCommentToArticle = (articleId, body) => {

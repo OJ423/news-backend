@@ -371,7 +371,6 @@ describe("API Articles", () => {
         .expect(200)
         .then(({ body }) => {
           const firstComment = body.comments[0];
-          expect(body.comments.length).toBe(11);
           if (body.comments.length > 0) {
             body.comments.forEach((comment) => {
               expect(comment).toHaveProperty("comment_id");
@@ -417,6 +416,74 @@ describe("API Articles", () => {
         });
     });
   });
+  describe("GET /api/articles/:article_id/comments?limit=:INT", () => {
+    it("200 should limit results to 5", () => {
+      return request(app)
+      .get('/api/articles/1/comments?limit=5')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments.length).toBe(5)
+      })
+    })
+    it("200 should default to limit of 10 if using a negative number", () => {
+      return request(app)
+      .get('/api/articles/1/comments?limit=-5')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments.length).toBe(10)
+      })
+    })
+    it("200 should default to limit of 10 if using an invalid query", () => {
+      return request(app)
+      .get('/api/articles/1/comments?limit=six')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments.length).toBe(10)
+      })
+    })
+    it("200 should display all comments if limit exceeds rows", () => {
+      return request(app)
+      .get('/api/articles/1/comments?limit=100')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments.length).toBe(11)
+      })
+    })
+  })
+  describe("GET /api/articles/:article_id/comments?p:INT", () => {
+    it("200 - should return 5 results with a limit of 6 offset by 6 where there are only 11 rows", () => {
+      return request(app)
+      .get('/api/articles/1/comments?limit=6&p=2')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.comments.length).toBe(5)
+        body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("article_id");
+        });
+      })
+    })
+    it("404 - inform that the page they are on exceeds the number of rows", () => {
+      return request(app)
+      .get('/api/articles/1/comments?limit=5&p=4')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("No records, exceeded the max page")
+      })
+    })
+    it("400 - bad request when using invalid p query", () => {
+      return request(app)
+      .get('/api/articles?limit=5&p=three')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid page number")
+      })
+    })
+  })
   describe("POST /api/articles/:article_id/comments", () => {
     it("adds a new comment to an article and returns the comment", () => {
       return request(app)
