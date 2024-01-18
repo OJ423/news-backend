@@ -5,6 +5,7 @@ const {
   addCommentToArticle,
   updateArticleById,
   addNewArticle,
+  removeArticle,
 } = require("../models/articles.models");
 
 const { checkArticleExists, checkCommentBodyFormat, checkTopicsExists, checkUserExists } = require("../utils/db-checks");
@@ -91,3 +92,14 @@ exports.postArticle = (req, res, next) => {
       next(err);
     });
 };
+
+exports.deleteArticle = (req, res, next) => {
+  const {article_id} = req.params
+  removeArticle(article_id)
+  .then((article) => {
+    res.status(204).send()
+  })
+  .catch((err) => {
+    next(err)
+  })
+}

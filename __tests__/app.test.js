@@ -106,66 +106,6 @@ describe("API Topics", () => {
 });
 
 describe("API Articles", () => {
-  describe("GET /api/articles/:article_id", () => {
-    it("200 Success - should return articles with the correct key value pairs", () => {
-      return request(app)
-        .get("/api/articles/1")
-        .expect(200)
-        .then((response) => {
-          const article = response.body.article;
-          expect(article.article_id).toBe(1);
-          expect(article.title).toBe("Living in the shadow of a great man");
-          expect(article.topic).toBe("mitch");
-          expect(article.author).toBe("butter_bridge");
-          expect(article.body).toBe("I find this existence challenging");
-          expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
-          expect(article.votes).toBe(100);
-          expect(article.article_img_url).toBe(
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          );
-          expect(typeof article.title).toBe("string");
-          expect(typeof article.topic).toBe("string");
-          expect(typeof article.author).toBe("string");
-          expect(typeof article.body).toBe("string");
-          expect(typeof article.created_at).toBe("string");
-          expect(typeof article.votes).toBe("number");
-          expect(typeof article.article_img_url).toBe("string");
-          expect(article.article_img_url.startsWith("http")).toBe(true);
-        });
-    });
-    it("200 Comment Count - should return an article with a count of all comments", () => {
-      return request(app)
-        .get("/api/articles/1")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.article.comment_count).toBe(11);
-        });
-    });
-    it("200 Zero Comment Count - should a 0 count for articles with no comments", () => {
-      return request(app)
-        .get("/api/articles/4")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.article.comment_count).toBe(0);
-        });
-    });
-    it("400 invalid data - should return an error when the wrong data type is used", () => {
-      return request(app)
-        .get("/api/articles/one")
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe("Invalid data type");
-        });
-    });
-    it("404 not found - should return a 404 not found error for ids not in the database", () => {
-      return request(app)
-        .get("/api/articles/7843")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.msg).toBe("Article not found");
-        });
-    });
-  });
   describe("GET /api/articles", () => {
     it("200 Success - should return articles with the correct keys and a sum of each articles comments", () => {
       return request(app)
@@ -714,6 +654,112 @@ describe("API Articles", () => {
         .then(({ body }) => {
           expect(body.msg).toBe(`This topic does not exist`);
         });
+    });
+  });
+  describe("GET /api/articles/:article_id", () => {
+    it("200 Success - should return articles with the correct key value pairs", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article.article_id).toBe(1);
+          expect(article.title).toBe("Living in the shadow of a great man");
+          expect(article.topic).toBe("mitch");
+          expect(article.author).toBe("butter_bridge");
+          expect(article.body).toBe("I find this existence challenging");
+          expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+          expect(article.votes).toBe(100);
+          expect(article.article_img_url).toBe(
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          );
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.body).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.article_img_url.startsWith("http")).toBe(true);
+        });
+    });
+    it("200 Comment Count - should return an article with a count of all comments", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article.comment_count).toBe(11);
+        });
+    });
+    it("200 Zero Comment Count - should a 0 count for articles with no comments", () => {
+      return request(app)
+        .get("/api/articles/4")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article.comment_count).toBe(0);
+        });
+    });
+    it("400 invalid data - should return an error when the wrong data type is used", () => {
+      return request(app)
+        .get("/api/articles/one")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
+    it("404 not found - should return a 404 not found error for ids not in the database", () => {
+      return request(app)
+        .get("/api/articles/7843")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Article not found");
+        });
+    });
+  });
+  describe("DELETE 204 - /api/articles/:article_id", () => {
+    it("204 return with no content - table should have one less article", () => {
+      return request(app)
+        .delete("/api/articles/1")
+        .expect(204)
+        .then(() => {
+          return db.query(`SELECT * FROM articles`).then(({ rows }) => {
+            expect(rows.length).toBe(12);
+          });
+        })
+        .then(() => {
+          return db.query(`SELECT * FROM comments WHERE article_id = 1`).then(({rows}) => {
+            expect(rows.length).toBe(0)
+          })
+        });
+    });
+    it("400 bad request when using wrong data type as a param", () => {
+      return request(app)
+        .delete("/api/articles/one")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
+    });
+    it("404 article doesn't exist", () => {
+      return request(app)
+        .delete("/api/articles/313")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Article does not exist");
+        });
+    });
+    it("204 should delete article that has no comments", () => {
+      return request(app)
+        .delete("/api/articles/4")
+        .expect(204)
+        .then(() => {
+          return db.query(`SELECT * FROM articles`)
+        })
+        .then(({rows}) => {
+          rows.forEach((row) => {
+            expect(row.article_id).not.toBe(4)
+          })
+        })
     });
   });
 });
