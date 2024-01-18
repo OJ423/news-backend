@@ -2,16 +2,9 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
-  "GET /api/topics": {
-    "description": "serves an array of all topics",
-    "queries": [],
-    "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
-    }
-  },
   "GET /api/articles": {
-    "description": "serves an array of all articles. Default ordering desc on created_at column. Includes a comment count. Use sort_by and order queries",
-    "queries": ["author", "topic", "sort_by", ["title", "author", "topic", "created_at"], "order", ["ASC", "DESC"]],
+    "description": "serves an array of all articles. Default ordering desc on created_at column. Includes a comment count. Use sort_by and order queries. Results are limited by default to 10. Use p=:INT to handle pagination",
+    "queries": ["author", "topic", "sort_by", ["title", "author", "topic", "created_at"], "order", ["ASC", "DESC"], "limit = 10", "p"],
     "exampleResponse": {
       "articles": [
         {
@@ -21,7 +14,8 @@
           "author": "weegembump",
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
-          "comment_count": 6
+          "comment_count": 6,
+          "total_count": 37
         }
       ]
     }
@@ -39,14 +33,15 @@
           "body": "A string body",
           "created_at": "2018-05-30T15:59:13.341Z",
           "votes": 0,
-          "comment_count": 6
+          "comment_count": 6,
+          "total_count": 37
         }
       ]
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves all comments associated to an article id ordered by data, newest first.",
-    "queries": [],
+    "description": "serves all comments associated to an article id ordered by data, newest first. Comments are limited 10 by default. Pagination can be handled with p query.",
+    "queries": ["limit = 10", "p"],
     "exampleResponse": {
       "comments": [
         {
@@ -89,6 +84,11 @@
       ]
     }
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "Delete an article based on its ID.",
+    "queries": [],
+    "exampleResponse": {}
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "Delete comment by comment_id.",
     "queries": [],
@@ -109,6 +109,21 @@
           "created_at": "2020-11-03T21:00:00.000Z"
         }
       ]
+    }
+  },
+  "GET /api/topics": {
+    "description": "serves an array of all topics",
+    "queries": [],
+    "exampleResponse": {
+      "topics": [{ "slug": "football", "description": "Footie!" }]
+    }
+  },
+  "POST /api/topics": {
+    "description": "add a new topic to the database",
+    "inputBodyExample": {"slug": "new topic slug", "description": "topic description"},
+    "queries": [],
+    "exampleResponse": {
+      "topics": [{ "slug": "football", "description": "The beautiful game" }]
     }
   },
   "GET /api/users": {

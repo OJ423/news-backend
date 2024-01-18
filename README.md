@@ -3,7 +3,7 @@
 ## Overview
 This repo is a social news api providing backend functionality for an application. With a Postgres database and an Express server, the application serves JSON via various endpoints to use in a frontend.
 
-**A hosted version** can be [found here](https://news-service-api.onrender.com/). A list and description of available endpoints can be [found here](https://news-service-api.onrender.com/api).
+**A hosted version** can be [found here](https://news-service-api.onrender.com/). *This service rebuilds after 15 minutes of inactivity so please bear with it if it take a while to load*. A list and description of available endpoints can be [found here](https://news-service-api.onrender.com/api).
 
 The database contains tables for articles, comments, topics and users. These are joined in various ways. For a better understanding of their structure read the `seed.js` file. The API allows for get, post, patch, delete and query. 
 
