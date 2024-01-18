@@ -162,7 +162,7 @@ describe("API Articles", () => {
         .then(({ body }) => {
           const articles = body.articles;
           const firstArticle = articles[0];
-          expect(articles.length).toBe(12);
+          expect(firstArticle.total_count).toBe("12");
           expect(firstArticle.article_id).toBe(3);
           expect(firstArticle.title).toBe(
             "Eight pug gifs that remind me of mitch"
@@ -191,7 +191,7 @@ describe("API Articles", () => {
         .get("/api/articles?machines=mitch")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).toBe(13);
+          expect(body.articles[0].total_count).toBe("13");
         });
     });
     it("200 responds with empty array for topics with no articles", () => {
@@ -210,7 +210,7 @@ describe("API Articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("title", { descending: true });
-          expect(body.articles.length).toBe(13);
+          expect(body.articles[0].total_count).toBe("13");
         });
     });
     it("200 - sorts decending order on author", () => {
@@ -219,7 +219,7 @@ describe("API Articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("author", { descending: true });
-          expect(body.articles.length).toBe(13);
+          expect(body.articles[0].total_count).toBe("13");
         });
     });
     it("200 - sorts decending order on topic", () => {
@@ -228,7 +228,7 @@ describe("API Articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("topic", { descending: true });
-          expect(body.articles.length).toBe(13);
+          expect(body.articles[0].total_count).toBe("13");
         });
     });
     it("200 - sorts decending order on votes", () => {
@@ -237,7 +237,7 @@ describe("API Articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("votes", { descending: true });
-          expect(body.articles.length).toBe(13);
+          expect(body.articles[0].total_count).toBe("13");
         });
     });
     it("400 - bad request for invalid sort", () => {
@@ -256,7 +256,7 @@ describe("API Articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("created_at", { ascending: true });
-          expect(body.articles.length).toBe(13);
+          expect(body.articles[0].total_count).toBe("13");
         });
     });
     it("200 combine sort_by with order - ascending", () => {
@@ -265,7 +265,7 @@ describe("API Articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeSortedBy("title", { ascending: true });
-          expect(body.articles.length).toBe(13);
+          expect(body.articles[0].total_count).toBe("13");
         });
     });
     it("400 bad request error with combined sort_by and order", () => {
@@ -277,6 +277,93 @@ describe("API Articles", () => {
         });
     });
   });
+  describe("GET /api/articles?limit=:INT", () => {
+    it("200- should limit results to 10", () => {
+      return request(app)
+      .get('/api/articles?limit=10')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(10)
+      })
+    })
+    it("200 - should limit results to 10 if limit is a negative", () => {
+      return request(app)
+      .get('/api/articles?limit=-10')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(10)
+      })
+    })
+    it("200 - returns with total count property when limit is used", () => {
+      return request(app)
+      .get('/api/articles?limit=5')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles[0].total_count).toBe("13")
+        expect(body.articles.length).toBe(5)
+      })
+    })
+    it("200 - returns 10 rows with an invalid limit query", () => {
+      return request(app)
+      .get('/api/articles?limit=eleven')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(10)
+      })
+    })
+    it("200 - returns 10 rows with an invalid characters", () => {
+      return request(app)
+      .get('/api/articles?limit=^";')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(10)
+      })
+    })
+    it("200 - should work with sortby", () => {
+      return request(app)
+      .get('/api/articles?sort_by=article_id&order=asc&limit=2;')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(2)
+        expect(body.articles[1].article_id).toBe(2)
+      })
+    })
+  })
+  describe("GET /api/articles?p=2", () => {
+    it("200- should limit offset by 10", () => {
+      return request(app)
+      .get('/api/articles?p=2')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(3)
+      })
+    })
+    it("200- should work together with limit query and offset by 5", () => {
+      return request(app)
+      .get('/api/articles?limit=5&p=2')
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBe(5)
+        expect(body.articles[0].title).toBe("UNCOVERED: catspiracy to bring down democracy")
+      })
+    })
+    it("404 - inform that the page they are on exceeds the number of rows", () => {
+      return request(app)
+      .get('/api/articles?limit=5&p=4')
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("No records, exceeded the max page")
+      })
+    })
+    it("400 - bad request when using invalid p query", () => {
+      return request(app)
+      .get('/api/articles?limit=5&p=three')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid page number")
+      })
+    })
+  })
   describe("GET /api/articles/:article_id/comments", () => {
     it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
       return request(app)

@@ -21,9 +21,9 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const {topic, sort_by, order} = req.query
+  const {topic, sort_by, order ,limit, p} = req.query
   const checkTopics = checkTopicsExists(topic)
-  const selectArticles = selectAllArticles(topic, sort_by, order)
+  const selectArticles = selectAllArticles(topic, sort_by, order, limit, p)
   Promise.all([selectArticles, checkTopics])
     .then((response) => {
       const articles = response[0]
