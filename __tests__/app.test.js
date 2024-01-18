@@ -62,6 +62,47 @@ describe("API Topics", () => {
         });
     });
   });
+  describe("POST /api/topics", () => {
+    it("adds a new topic and returns it", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({
+          slug: "funny sounding place names",
+          description: "Towns, villages and cities across the world with funny sounding names"
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const topic = body.topic;
+          expect(topic.slug).toBe("funny sounding place names");
+          expect(topic.description).toBe("Towns, villages and cities across the world with funny sounding names")
+        })
+        .then(() => {
+          return db.query(`SELECT * FROM topics`)
+        })
+        .then(({rows}) => {
+          expect(rows.length).toBe(4)
+        })
+    });
+    it("200 accepts a new topic without a description", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ slug: "amazing bridges"})
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.topic.slug).toBe("amazing bridges");
+          expect(body.topic.description).toBe(null);
+        });
+    });
+    it("400 should error when sending topic without slug", () => {
+      return request(app)
+        .post("/api/topics")
+        .send({ description: "amazing bridges"})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing required data");
+        });
+    });
+  });
 });
 
 describe("API Articles", () => {
@@ -760,7 +801,7 @@ describe("API Comments", () => {
 });
 
 describe("API Users", () => {
-  describe("200 GET /api/users", () => {
+  describe("GET /api/users", () => {
     it("200 - should return all users", () => {
       return request(app)
         .get("/api/users")
