@@ -260,7 +260,7 @@ describe("API Articles", () => {
     });
   });
   describe("GET /api/articles?limit=:INT", () => {
-    it("200- should limit results to 10", () => {
+    it("returns 200 limiting results to 10", () => {
       return request(app)
       .get('/api/articles?limit=10')
       .expect(200)
@@ -268,7 +268,7 @@ describe("API Articles", () => {
         expect(body.articles.length).toBe(10)
       })
     })
-    it("200 - should limit results to 10 if limit is a negative", () => {
+    it("returns 200 limiting results to 10 if limit is 0 or less", () => {
       return request(app)
       .get('/api/articles?limit=-10')
       .expect(200)
@@ -276,7 +276,7 @@ describe("API Articles", () => {
         expect(body.articles.length).toBe(10)
       })
     })
-    it("200 - returns with total count property when limit is used", () => {
+    it("returns 200 with a total count property when limit is used", () => {
       return request(app)
       .get('/api/articles?limit=5')
       .expect(200)
@@ -285,7 +285,7 @@ describe("API Articles", () => {
         expect(body.articles.length).toBe(5)
       })
     })
-    it("200 - returns 10 rows with an invalid limit query", () => {
+    it("returns 200 with 10 rows and an invalid limit query", () => {
       return request(app)
       .get('/api/articles?limit=eleven')
       .expect(200)
@@ -293,7 +293,7 @@ describe("API Articles", () => {
         expect(body.articles.length).toBe(10)
       })
     })
-    it("200 - returns 10 rows with an invalid characters", () => {
+    it("returns 200 with 10 rows and invalid characters", () => {
       return request(app)
       .get('/api/articles?limit=^";')
       .expect(200)
