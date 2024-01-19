@@ -19,7 +19,7 @@ describe("API Endpoints", () => {
         expect(typeof body).toBe("object");
       });
   });
-  it("should respond with an object that looks like the endpoints.json file", () => {
+  it("should respond with an object representing endpoints.json", () => {
     return request(app)
       .get("/api")
       .expect(200)
