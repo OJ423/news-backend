@@ -6,9 +6,7 @@ exports.deleteCommentById = (req, res, next) => {
     .then((response) => {
         res.status(204).send()
     })
-    .catch((err) => {
-        next(err)
-    })
+    .catch(next)
 }
 
 exports.patchCommentById = (req, res, next) => {
@@ -19,7 +17,5 @@ exports.patchCommentById = (req, res, next) => {
     .then((comment) => {
         res.status(200).send({comment})
     })
-    .catch((err) => {
-        next(err)
-    })
+    .catch(next)
 }

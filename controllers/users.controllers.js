@@ -5,9 +5,7 @@ exports.getAllUsers = (req, res, next) => {
     .then((users) => {
         res.status(200).send({users})
     })
-    .catch((err) => {
-        next(err)
-    })
+    .catch(next)
 }
 
 exports.getUserById = (req, res, next) => {
@@ -16,7 +14,5 @@ exports.getUserById = (req, res, next) => {
     .then((user) => {
         res.status(200).send({user})
     })
-    .catch((err) => {
-        next(err)
-    })
+    .catch(next)
 }

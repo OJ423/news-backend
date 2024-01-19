@@ -5,9 +5,7 @@ exports.getAllTopics = (req, res, next) => {
     .then((topics) => {
         res.status(200).send({topics: topics})
     })
-    .catch((err) => {
-        next(err)
-    })
+    .catch(next)
 }
 
 exports.postNewTopic = (req, res, next) => {
@@ -16,7 +14,5 @@ exports.postNewTopic = (req, res, next) => {
     .then((topic) => {
         res.status(201).send({topic})
     })
-    .catch((err) => {
-        next(err)
-    })
+    .catch(next)
 }

@@ -5,7 +5,5 @@ exports.getApiEndpoints = (req, res, next) => {
     .then((response) => {
         res.status(200).send({endpoints:response})
     })
-    .catch((err) => {
-        next(err)
-    })
+    .catch(next)
 }
