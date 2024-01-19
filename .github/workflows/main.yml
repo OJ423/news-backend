@@ -1,0 +1,32 @@
+---
+name: Test & Deploy
+on:
+  pull-request:
+    branches:
+      - main
+jobs:
+  test-utils:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout and clone repo
+        uses: action/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Test Utils
+        run: npm run test utils.test.js
+  test-app:
+    needs: test-utils
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout and clone repo
+        uses: action/checkout@v3
+      - name: Setup PSQL
+        uses: harmon758/postgresql-action@v1
+        with:
+          postgres db: test_db
+          postgres user: bobby
+          postgres password: pa55word
+      - name: Install dependencies
+        run: npm install
+      - name: Test App
+        run: PGDATABASE=test_db PGUSER=bobby PGPASSWORD=pa55word npm test app.test.js
