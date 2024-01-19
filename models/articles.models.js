@@ -20,7 +20,7 @@ exports.selectArticleById = (articleId) => {
     });
 };
 
-exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit = 10, p) => {
+exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit, p) => {
   //BASE QUERY
   let sqlQuery = `
     SELECT articles.article_id, articles.article_img_url, articles.author, articles.created_at, articles.title, articles.votes, articles.topic, COUNT(comments.article_id)::int AS comment_count, count(*) OVER() AS total_count
@@ -47,21 +47,30 @@ exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit
     return Promise.reject({status: 400, msg: "Please use another sort_by type."})
   }
   //LIMIT
-  let rowLimit = limit.toString()
-  if (limit < 1 || /^\D/g.test(rowLimit)) rowLimit = 10
-  sqlQuery += ` LIMIT ${rowLimit}`
+  let rowLimit = limit !== undefined ? limit.toString() : undefined
+  if(limit !== undefined) {
+    if (limit < 1 || /^\D/g.test(rowLimit)) rowLimit = 10
+    sqlQuery += ` LIMIT ${rowLimit}`
+  }
   //PAGINATION
   const pNum = +p
   if (/^\D/g.test(p) && p !== undefined) {
     return Promise.reject({status:400, msg: "Invalid page number"})
   }
-  if (p !== undefined && pNum === 1) {
+  else if (p !== undefined && pNum === 1 && limit !== undefined) {
     sqlQuery += ` OFFSET 0`
   }
-  else if (p !== undefined && pNum > 1) {
+  else if (p !== undefined && pNum === 1 && limit === undefined) {
+    sqlQuery += ` LIMIT 10 OFFSET 0`
+  }
+  else if (p !== undefined && pNum > 1 && limit !== undefined) {
     const offsetValue = (p-1) * rowLimit
       sqlQuery += ` OFFSET ${offsetValue}`
-    }
+  }
+  else if (p !== undefined && pNum > 1 && limit === undefined) {
+    const offsetValue = (p-1) * 10
+      sqlQuery += ` LIMIT 10 OFFSET ${offsetValue}`
+  }
   //RETURN QUERY
   return db.query(sqlQuery, queryValue)
   .then(({rows}) => {
@@ -72,26 +81,35 @@ exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit
   });
 };
 
-exports.selectCommentsByArticleId = (articleId, limit = 10, p) => {
+exports.selectCommentsByArticleId = (articleId, limit, p) => {
   let sqlQuery = `
     SELECT * FROM comments
     WHERE article_id = $1
     ORDER BY created_at DESC`
   const queryValue = [articleId]
 
-  if(limit < 1 || /^\D/g.test(limit)) limit = 10
-  sqlQuery += ` LIMIT ${limit}`
+  if (limit !== undefined) {
+    if(limit < 1 || /^\D/g.test(limit)) limit = 10
+    sqlQuery += ` LIMIT ${limit}`
+  }
 
   const pNum = +p
   if (/^\D/g.test(p) && p !== undefined) {
     return Promise.reject({status:400, msg: "Invalid page number"})
   }
-  if (p !== undefined && pNum === 1) {
+  else if (p !== undefined && pNum === 1 && limit !== undefined) {
     sqlQuery += ` OFFSET 0`
   }
-  else if (p !== undefined && pNum > 1) {
+  else if (p !== undefined && pNum === 1 && limit === undefined) {
+    sqlQuery += ` LIMIT 10 OFFSET 0`
+  }
+  else if (p !== undefined && pNum > 1 && limit !== undefined) {
     const offsetValue = (p-1) * limit
       sqlQuery += ` OFFSET ${offsetValue}`
+  }
+  else if (p !== undefined && pNum > 1 && limit === undefined) {
+    const offsetValue = (p-1) * limit
+      sqlQuery += ` LIMIT 10 OFFSET ${offsetValue}`
   }
 
   return db.query(sqlQuery, queryValue)
