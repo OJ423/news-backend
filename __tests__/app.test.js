@@ -432,7 +432,7 @@ describe("API Articles", () => {
     })
   })
   describe("GET /api/articles/:article_id/comments?p:INT", () => {
-    it("200 - should return 5 results with a limit of 6 offset by 6 where there are only 11 rows", () => {
+    it("returns 200 with 5 results and a limit of 6 offset by 6 where there are only 11 rows", () => {
       return request(app)
       .get('/api/articles/1/comments?limit=6&p=2')
       .expect(200)
@@ -448,7 +448,7 @@ describe("API Articles", () => {
         });
       })
     })
-    it("404 - inform that the page they are on exceeds the number of rows", () => {
+    it("returns 404 to say the page exceeds the number of rows", () => {
       return request(app)
       .get('/api/articles/1/comments?limit=5&p=4')
       .expect(404)
@@ -456,7 +456,7 @@ describe("API Articles", () => {
         expect(body.msg).toBe("No records, exceeded the max page")
       })
     })
-    it("400 - bad request when using invalid p query", () => {
+    it("returns 400 with bad request when using invalid p query", () => {
       return request(app)
       .get('/api/articles?limit=5&p=three')
       .expect(400)
@@ -466,7 +466,7 @@ describe("API Articles", () => {
     })
   })
   describe("POST /api/articles/:article_id/comments", () => {
-    it("adds a new comment to an article and returns the comment", () => {
+    it("returns 201 with a new comment added to an article", () => {
       return request(app)
         .post("/api/articles/2/comments")
         .send({ username: "butter_bridge", body: "I saw this on Facebook" })
@@ -483,7 +483,7 @@ describe("API Articles", () => {
           });
         });
     });
-    it("400 returns invalid data message if the wrong data type is used", () => {
+    it("returns 400 with invalid data message when using the wrong data type", () => {
       return request(app)
         .post("/api/articles/four/comments")
         .send({ username: "butter_bridge", body: "I saw this on Facebook" })
@@ -492,7 +492,7 @@ describe("API Articles", () => {
           expect(body.msg).toBe("Invalid data type");
         });
     });
-    it("404 returns a 404 message if the article ID does not exist", () => {
+    it("returns 404 saying the article ID does not exist", () => {
       return request(app)
         .post("/api/articles/999/comments")
         .send({ username: "butter_bridge", body: "I saw this on Facebook" })
@@ -501,7 +501,7 @@ describe("API Articles", () => {
           expect(body.msg).toBe(`Article does not exist`);
         });
     });
-    it("400 returns error when incomplete data is submitted", () => {
+    it("returns 400 with an incomplete data error", () => {
       return request(app)
         .post("/api/articles/6/comments")
         .send({ username: "butter_bridge" })
@@ -510,7 +510,7 @@ describe("API Articles", () => {
           expect(body.msg).toBe(`Missing required data`);
         });
     });
-    it("400 returns error when the wrong format of data is used with the correct columns", () => {
+    it("returns 400 when the wrong format of data is used with the correct columns", () => {
       return request(app)
         .post("/api/articles/6/comments")
         .send({ username: "butter_bridge", body: { number: 34758 } })
@@ -519,7 +519,7 @@ describe("API Articles", () => {
           expect(body.msg).toBe(`Wrong data type in body`);
         });
     });
-    it("400 returns error when unregistered user submits comment", () => {
+    it("returns 400 when an unregistered user submits comment", () => {
       return request(app)
         .post("/api/articles/6/comments")
         .send({
@@ -535,7 +535,7 @@ describe("API Articles", () => {
     });
   });
   describe("PATCH /api/articles/:article_id", () => {
-    it("200 returns with article title, id and votes added by the input", () => {
+    it("returns 200 with the article title when inputting vote counts", () => {
       return request(app)
         .patch("/api/articles/5")
         .send({ inc_votes: 5 })
