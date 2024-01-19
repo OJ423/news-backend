@@ -301,7 +301,7 @@ describe("API Articles", () => {
         expect(body.articles.length).toBe(10)
       })
     })
-    it("200 - should work with sortby", () => {
+    it("returns 200 using sortby query & limit", () => {
       return request(app)
       .get('/api/articles?sort_by=article_id&order=asc&limit=2;')
       .expect(200)
@@ -312,7 +312,7 @@ describe("API Articles", () => {
     })
   })
   describe("GET /api/articles?p=2", () => {
-    it("200- should limit offset by 10", () => {
+    it("returns 200 with limit offset by 10", () => {
       return request(app)
       .get('/api/articles?p=2')
       .expect(200)
@@ -320,7 +320,7 @@ describe("API Articles", () => {
         expect(body.articles.length).toBe(3)
       })
     })
-    it("200- should work together with limit query and offset by 5", () => {
+    it("returns 200 using limit query and offset by 5", () => {
       return request(app)
       .get('/api/articles?limit=5&p=2')
       .expect(200)
@@ -329,7 +329,7 @@ describe("API Articles", () => {
         expect(body.articles[0].title).toBe("UNCOVERED: catspiracy to bring down democracy")
       })
     })
-    it("404 - inform that the page they are on exceeds the number of rows", () => {
+    it("returns 404 saying the page exceeds the number of rows", () => {
       return request(app)
       .get('/api/articles?limit=5&p=4')
       .expect(404)
@@ -337,7 +337,7 @@ describe("API Articles", () => {
         expect(body.msg).toBe("No records, exceeded the max page")
       })
     })
-    it("400 - bad request when using invalid p query", () => {
+    it("returns 400 bad request when using invalid p query", () => {
       return request(app)
       .get('/api/articles?limit=5&p=three')
       .expect(400)
@@ -347,7 +347,7 @@ describe("API Articles", () => {
     })
   })
   describe("GET /api/articles/:article_id/comments", () => {
-    it("200 return the comments for an article_id, with comment_id, votes, created_at, author, body, article_id. Sorted most recent first", () => {
+    it("returns 200 with the comments for an article_id. Sorted most recent first", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
