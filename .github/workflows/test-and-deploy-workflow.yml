@@ -1,7 +1,7 @@
 ---
 name: Test & Deploy
 on:
-  pull-request:
+  pull_request:
     branches:
       - main
 jobs:
