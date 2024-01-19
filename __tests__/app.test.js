@@ -9,6 +9,7 @@ const endpoints = require("../endpoints.json");
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
+
 describe("API Endpoints", () => {
   it("should response with an object", () => {
     return request(app)
