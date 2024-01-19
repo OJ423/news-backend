@@ -373,7 +373,7 @@ describe("API Articles", () => {
           }
         });
     });
-    it("200 and empty array for articles with no comments", () => {
+    it("returns 200 with an empty array for articles with no comments", () => {
       return request(app)
         .get("/api/articles/4/comments")
         .expect(200)
@@ -381,7 +381,7 @@ describe("API Articles", () => {
           expect(body.comments).toEqual([]);
         });
     });
-    it("400 returns invalid data message if the wrong data type is used", () => {
+    it("return 400 with an invalid data message if the wrong data type is used", () => {
       return request(app)
         .get("/api/articles/one/comments")
         .expect(400)
@@ -389,7 +389,7 @@ describe("API Articles", () => {
           expect(body.msg).toBe("Invalid data type");
         });
     });
-    it("404 returns a 404 message if the article ID does not exist", () => {
+    it("returns 404 if the article ID does not exist", () => {
       return request(app)
         .get("/api/articles/400/comments")
         .expect(404)
@@ -399,7 +399,7 @@ describe("API Articles", () => {
     });
   });
   describe("GET /api/articles/:article_id/comments?limit=:INT", () => {
-    it("200 should limit results to 5", () => {
+    it("returns 200 with results limited to 5", () => {
       return request(app)
       .get('/api/articles/1/comments?limit=5')
       .expect(200)
@@ -407,7 +407,7 @@ describe("API Articles", () => {
         expect(body.comments.length).toBe(5)
       })
     })
-    it("200 should default to limit of 10 if using a negative number", () => {
+    it("returns 200 with a default limit of 10 when using a negative number", () => {
       return request(app)
       .get('/api/articles/1/comments?limit=-5')
       .expect(200)
@@ -415,7 +415,7 @@ describe("API Articles", () => {
         expect(body.comments.length).toBe(10)
       })
     })
-    it("200 should default to limit of 10 if using an invalid query", () => {
+    it("returns 200 with default limit of 10 when using an invalid query", () => {
       return request(app)
       .get('/api/articles/1/comments?limit=six')
       .expect(200)
@@ -423,7 +423,7 @@ describe("API Articles", () => {
         expect(body.comments.length).toBe(10)
       })
     })
-    it("200 should display all comments if limit exceeds rows", () => {
+    it("returns 200 and displays all comments if limit exceeds rows", () => {
       return request(app)
       .get('/api/articles/1/comments?limit=100')
       .expect(200)
