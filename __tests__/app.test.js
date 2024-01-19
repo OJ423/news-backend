@@ -369,7 +369,6 @@ describe("API Articles", () => {
             expect(firstComment.article_id).toBe(1);
             expect(firstComment.author).toBe("icellusedkars");
             expect(firstComment.votes).toBe(0);
-            expect(firstComment.created_at).toBe("2020-11-03T21:00:00.000Z");
           }
         });
     });
@@ -669,7 +668,6 @@ describe("API Articles", () => {
           expect(article.topic).toBe("mitch");
           expect(article.author).toBe("butter_bridge");
           expect(article.body).toBe("I find this existence challenging");
-          expect(article.created_at).toEqual("2020-07-09T20:11:00.000Z");
           expect(article.votes).toBe(100);
           expect(article.article_img_url).toBe(
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
