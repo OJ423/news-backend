@@ -28,7 +28,9 @@ exports.getAllArticles = (req, res, next) => {
       const articles = response[0]
       res.status(200).send({ articles });
     })
-    .catch(next)
+    .catch((err) => {
+      next(err)
+    })
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
