@@ -186,7 +186,7 @@ describe("API Articles", () => {
     });
   });
   describe("GET /api/articles?sort_by=:column", () => {
-    it("200 - sorts decending order on title", () => {
+    it("200 - sorts descending order on title", () => {
       return request(app)
         .get("/api/articles?sort_by=title")
         .expect(200)
@@ -195,7 +195,7 @@ describe("API Articles", () => {
           expect(body.articles[0].total_count).toBe("13");
         });
     });
-    it("200 - sorts decending order on author", () => {
+    it("200 - sorts descending order on author", () => {
       return request(app)
         .get("/api/articles?sort_by=author")
         .expect(200)
@@ -204,7 +204,7 @@ describe("API Articles", () => {
           expect(body.articles[0].total_count).toBe("13");
         });
     });
-    it("200 - sorts decending order on topic", () => {
+    it("returns 200 - sorts descending order on topic", () => {
       return request(app)
         .get("/api/articles?sort_by=topic")
         .expect(200)
@@ -213,7 +213,7 @@ describe("API Articles", () => {
           expect(body.articles[0].total_count).toBe("13");
         });
     });
-    it("200 - sorts decending order on votes", () => {
+    it("returns 200 - sorts decending order on votes", () => {
       return request(app)
         .get("/api/articles?sort_by=votes")
         .expect(200)
@@ -222,7 +222,7 @@ describe("API Articles", () => {
           expect(body.articles[0].total_count).toBe("13");
         });
     });
-    it("400 - bad request for invalid sort", () => {
+    it("returns 400 - bad request for invalid sort", () => {
       return request(app)
         .get("/api/articles?sort_by=jabber")
         .expect(400)
@@ -232,7 +232,7 @@ describe("API Articles", () => {
     });
   });
   describe("GET /api/articles?order=:ASC/DESC", () => {
-    it("200 ascending order on create_at", () => {
+    it("returns 200 ascending order on create_at", () => {
       return request(app)
         .get("/api/articles?order=asc")
         .expect(200)
@@ -241,7 +241,7 @@ describe("API Articles", () => {
           expect(body.articles[0].total_count).toBe("13");
         });
     });
-    it("200 combine sort_by with order - ascending", () => {
+    it("returns 200 combining sort_by with order - ascending", () => {
       return request(app)
         .get("/api/articles?sort_by=title&order=asc")
         .expect(200)
@@ -250,7 +250,7 @@ describe("API Articles", () => {
           expect(body.articles[0].total_count).toBe("13");
         });
     });
-    it("400 bad request error with combined sort_by and order", () => {
+    it("returns 400 bad request error with combined sort_by and order", () => {
       return request(app)
         .get("/api/articles?sort_by=money&order=asc")
         .expect(400)
