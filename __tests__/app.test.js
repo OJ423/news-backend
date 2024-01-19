@@ -125,7 +125,7 @@ describe("API Articles", () => {
           });
         });
     });
-    it("200 desc order - should return articles in desc order based on create_at date", () => {
+    it("200 desc order - should return articles in create_at data desc order", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
