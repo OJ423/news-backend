@@ -108,7 +108,7 @@ describe("API Topics", () => {
 
 describe("API Articles", () => {
   describe("GET /api/articles", () => {
-    it("200 Success - should return articles with the correct keys and a sum of each articles comments", () => {
+    it("200 Success - should return articles with the correct keys and a sum of article comments", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
