@@ -3,7 +3,7 @@ name: Test & Deploy
 on:
   branches:
     pull-request:
-      -main
+      - main
 
 jobs:
   test-utils:
@@ -31,5 +31,5 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Test App
-        run: PGDATABASE=test_db PGUSER=bobby PGPASSWORD=pa55word npm test app.test.js 
+        run: PGDATABASE=test_db PGUSER=bobby PGPASSWORD=pa55word npm test app.test.js
 
