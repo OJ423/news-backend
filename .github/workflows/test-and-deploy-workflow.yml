@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and clone repo
-        uses: action/checkout@v3
+        uses: actions/checkout@v3
       - name: Install dependencies
         run: npm install
       - name: Test Utils
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and clone repo
-        uses: action/checkout@v3
+        uses: actions/checkout@v3
       - name: Setup PSQL
         uses: harmon758/postgresql-action@v1
         with:
