@@ -29,7 +29,7 @@ exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit
     ON comments.article_id = articles.article_id
     `
   //VALIDATION
-  const sortValidator = ["title", "author", "topic", "created_at", "votes", "article_id"]
+  const sortValidator = ["title", "author", "topic", "created_at", "votes", "article_id", "comment_count"]
   const orderUpper = order.toUpperCase()
   
   //FILTER
