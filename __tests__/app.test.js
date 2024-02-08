@@ -222,6 +222,15 @@ describe("API Articles", () => {
           expect(body.articles[0].total_count).toBe("13");
         });
     });
+    it("returns 200 - sorts decending order on comments_count", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("comment_count", { descending: true });
+          expect(body.articles[0].total_count).toBe("13");
+        });
+    });
     it("returns 400 - bad request for invalid sort", () => {
       return request(app)
         .get("/api/articles?sort_by=jabber")

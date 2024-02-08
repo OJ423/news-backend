@@ -1,3 +1,4 @@
+const { query } = require("express");
 const { db } = require("../db/connection");
 
 exports.selectArticleById = (articleId) => {
@@ -41,7 +42,9 @@ exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit
   sqlQuery += ` GROUP BY articles.article_id`
   //SORT BY
   if(sortValidator.includes(sortBy)) {
-    sqlQuery += ` ORDER BY articles.${sortBy} ${orderUpper}`
+    sortBy !== "comment_count" ?
+    sqlQuery += ` ORDER BY articles.${sortBy} ${orderUpper}` :
+    sqlQuery += ` ORDER BY ${sortBy} ${orderUpper}`
   }
   else if (!sortValidator.includes(sortBy)) {
     return Promise.reject({status: 400, msg: "Please use another sort_by type."})
@@ -71,6 +74,7 @@ exports.selectAllArticles = (topic, sortBy = "created_at", order = "DESC", limit
     const offsetValue = (p-1) * 10
       sqlQuery += ` LIMIT 10 OFFSET ${offsetValue}`
   }
+
   //RETURN QUERY
   return db.query(sqlQuery, queryValue)
   .then(({rows}) => {
